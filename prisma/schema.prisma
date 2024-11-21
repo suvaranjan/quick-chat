@@ -1,0 +1,150 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String   @id @default(uuid())
+  clerkUserId String   @unique
+  username    String   @unique
+  avatar      String
+  email       String   @unique
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  messages               Message[]
+  sentFriendRequests     FriendRequest[] @relation("SentRequests")
+  receivedFriendRequests FriendRequest[] @relation("ReceivedRequests")
+  friends                Friend[]        @relation("UserFriends")
+  friendOf               Friend[]        @relation("FriendOf")
+  seenMessages           SeenBy[]
+
+  duoConversations1  DuoConversation[]   @relation("DuoUser1")
+  duoConversations2  DuoConversation[]   @relation("DuoUser2")
+  groupConversations GroupParticipant[]
+  adminOfGroups      GroupConversation[] @relation("groupAdmin")
+
+  @@index([email])
+}
+
+model DuoConversation {
+  id        String   @id @default(uuid())
+  user1Id   String
+  user2Id   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user1    User      @relation("DuoUser1", fields: [user1Id], references: [id])
+  user2    User      @relation("DuoUser2", fields: [user2Id], references: [id])
+  messages Message[]
+
+  @@unique([user1Id, user2Id])
+  @@index([updatedAt])
+}
+
+model GroupConversation {
+  id           String   @id @default(uuid())
+  name         String
+  groupAvatar  String?  @default("https://bit.ly/broken-link")
+  groupAdminId String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  groupAdmin   User               @relation("groupAdmin", fields: [groupAdminId], references: [id])
+  participants GroupParticipant[]
+  messages     Message[]
+
+  @@index([updatedAt])
+}
+
+model GroupParticipant {
+  userId              String
+  groupConversationId String
+  role                GroupRole @default(MEMBER)
+  joinedAt            DateTime  @default(now())
+
+  user              User              @relation(fields: [userId], references: [id])
+  groupConversation GroupConversation @relation(fields: [groupConversationId], references: [id])
+
+  @@id([userId, groupConversationId])
+}
+
+model FriendRequest {
+  id         String        @id @default(uuid())
+  senderId   String
+  receiverId String
+  status     RequestStatus @default(PENDING)
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+
+  sender   User @relation("SentRequests", fields: [senderId], references: [id])
+  receiver User @relation("ReceivedRequests", fields: [receiverId], references: [id])
+
+  @@unique([senderId, receiverId])
+}
+
+model Friend {
+  id        String   @id @default(uuid())
+  userId    String
+  friendId  String
+  createdAt DateTime @default(now())
+
+  user   User @relation("UserFriends", fields: [userId], references: [id])
+  friend User @relation("FriendOf", fields: [friendId], references: [id])
+
+  @@unique([userId, friendId])
+}
+
+model Message {
+  id        String      @id @default(uuid())
+  content   String
+  type      MessageType @default(TEXT)
+  timestamp DateTime    @default(now())
+  editedAt  DateTime?
+  deletedAt DateTime?
+
+  duoConversationId   String?
+  groupConversationId String?
+  senderId            String
+
+  duoConversation   DuoConversation?   @relation(fields: [duoConversationId], references: [id])
+  groupConversation GroupConversation? @relation(fields: [groupConversationId], references: [id])
+  sender            User               @relation(fields: [senderId], references: [id])
+  seenBy            SeenBy[]
+
+  @@index([timestamp])
+}
+
+model SeenBy {
+  userId    String
+  messageId String
+  seenAt    DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id])
+  message Message @relation(fields: [messageId], references: [id])
+
+  @@id([userId, messageId])
+}
+
+enum MessageType {
+  TEXT
+  IMAGE
+  VIDEO
+  AUDIO
+  FILE
+}
+
+enum RequestStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+enum GroupRole {
+  MEMBER
+  ADMIN
+}
