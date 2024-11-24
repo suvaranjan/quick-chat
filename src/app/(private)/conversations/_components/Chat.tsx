@@ -10,8 +10,6 @@ import {
 } from "@/components/ui/resizable";
 
 import { useRouter, usePathname } from "next/navigation";
-// import { getConversations } from "@/app/actions/chat";
-// import LoadingChats from "./LoadingChatList";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { getConversations } from "@/actions/chat";

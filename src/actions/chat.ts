@@ -10,6 +10,7 @@ import {
 } from "@/db/functions/conversation";
 import { findUserByClerkId } from "@/db/functions/user";
 import { fetchMessages, createMessage } from "@/db/functions/message";
+import { pusherServer } from "@/lib/pusher";
 
 export async function getConversations(limit = 5, cursor?: string) {
   const { userId } = await auth();
@@ -210,18 +211,21 @@ export async function sendMessage(conversationId: string, content: string) {
       content
     );
 
-    return {
-      message: {
-        id: message.id,
-        content: message.content,
-        type: message.type,
-        timestamp: message.timestamp.toISOString(),
-        senderId: message.senderId,
-        senderName: loggedInUser.username,
-        senderAvatar: loggedInUser.avatar,
-        seenBy: [],
-      },
+    const newMessage = {
+      id: message.id,
+      content: message.content,
+      type: message.type,
+      timestamp: message.timestamp.toISOString(),
+      senderId: message.senderId,
+      senderName: loggedInUser.username,
+      senderAvatar: loggedInUser.avatar,
+      seenBy: [],
     };
+
+    // Trigger Pusher event
+    await pusherServer.trigger(conversationId, "new-message", newMessage);
+
+    return { message: newMessage };
   } catch (error) {
     console.error("Error sending message:", error);
     return { error: { message: "Failed to send message" } };

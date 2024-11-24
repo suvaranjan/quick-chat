@@ -15,7 +15,7 @@ export default async function FriendsPage(props: {
   const currentPage = parseInt(Array.isArray(page) ? page[0] : page, 10);
 
   return (
-    <Suspense fallback={<FriendsLoading required={6} />}>
+    <Suspense fallback={<FriendsLoading required={3} />}>
       <FriendsData currentPage={currentPage} />
     </Suspense>
   );

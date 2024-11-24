@@ -15,7 +15,7 @@ export default async function RequestsPage(props: {
   const currentPage = parseInt(Array.isArray(page) ? page[0] : page, 10);
 
   return (
-    <Suspense fallback={<RequestsLoading required={5} />}>
+    <Suspense fallback={<RequestsLoading required={3} />}>
       <RequestsData currentPage={currentPage} />
     </Suspense>
   );
