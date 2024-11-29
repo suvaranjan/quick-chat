@@ -11,9 +11,9 @@ export default function LoadingChats() {
 
       {/* If Display is large it add a border rightside to this comp*/}
       <div className="mobile-hidden flex absolute top-0 left-[440px] w-[1px] h-full bg-border items-center justify-center">
-        <div className="z-10 flex h-4 w-3 items-center justify-center rounded-sm border bg-border">
+        {/* <div className="z-10 flex h-4 w-3 items-center justify-center rounded-sm border bg-border">
           <GripVertical className="h-2.5 w-2.5" />
-        </div>
+        </div> */}
       </div>
     </div>
   );

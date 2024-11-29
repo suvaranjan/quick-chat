@@ -29,7 +29,7 @@ export default function ChatListHeader() {
     <>
       <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-sm border-b">
         {!isSearchVisible ? (
-          <div className="flex items-center justify-between p-2">
+          <div className="flex items-center justify-between p-3">
             <Tabs
               value={pathname.startsWith("/rooms") ? "/rooms" : "/chat"}
               onValueChange={handleTabChange}

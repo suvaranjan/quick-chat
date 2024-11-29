@@ -10,7 +10,7 @@ export default function LoadingChatDisplay() {
         <Button variant="ghost" size="icon" className="mr-2" disabled>
           <ArrowLeft className="h-4 w-4" />
         </Button>
-        <Skeleton className="w-10 h-10 rounded-full mr-2" />
+        <Skeleton className="w-9 h-9 rounded-full mr-2" />
         <div className="ml-3 flex-1">
           <Skeleton className="w-28 h-5 rounded-md" />
           <Skeleton className="w-20 h-3 mt-1 rounded-md" />

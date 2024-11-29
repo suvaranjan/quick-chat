@@ -33,7 +33,7 @@ const getChatLink = (chat: ChatItem) => {
     case "room":
       return `/conversations/${chat.conversationId}/rooms`;
     default:
-      return "/chat";
+      return "/conversations";
   }
 };
 
